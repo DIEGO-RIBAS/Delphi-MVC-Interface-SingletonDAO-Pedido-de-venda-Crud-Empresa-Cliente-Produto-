@@ -1,0 +1,215 @@
+unit uCliente.Model;
+
+interface
+  uses
+    System.SysUtils,
+    FireDAC.Comp.Client,
+    uCliente.Implements,
+    uCliente.ModeloDB;
+
+  type
+
+  TClienteModel = class(TInterfacedObject, iCliente)
+    private
+      FQuery : TFDQuery;
+
+      FCliente : TClienteModeloDB;
+
+      FId : Integer;
+      FNome : string;
+      Fcidade : string;
+      Fuf : string;
+
+      function id(AValue : integer):iCliente;
+      function Nome(AVAlue : string):iCliente;
+      function cidade(AValue : string): iCliente;
+      function uf(AValue : string): iCliente;
+
+      function Gravar : Boolean;
+      function Listar(AMemTable : TFDMemTable):Boolean;
+      function Deletar : Boolean;
+      function GetCliente : TClienteModeloDB;
+    public
+
+      class function New : iCliente;
+
+      constructor create;
+      destructor destroy;override;
+  end;
+
+implementation
+
+  uses
+    uDao.ConexaoSingleton;
+
+{ TClienteModel }
+
+function TClienteModel.cidade(AValue: string): iCliente;
+begin
+  Fcidade := AValue;
+  Result := Self;
+end;
+
+constructor TClienteModel.create;
+begin
+  FQuery := TFDQuery.Create(nil);
+  FQuery.Connection :=   TConexaoSingleton.GetInstance.Conexao;
+
+  FCliente := TClienteModeloDB.Create;
+end;
+
+function TClienteModel.Deletar: Boolean;
+begin
+  Result := False;
+
+  with FQuery do
+  begin
+    close;
+
+    with SQL do
+    begin
+      Clear;
+
+      Add('delete from Cliente where id = '+Fid.ToString);
+    end;
+
+    try
+      ExecSQL;
+      Result := True;
+    except On E: Exception do
+      raise Exception.Create('Erro ao deletar '+ E.Message);
+    end;
+  end;
+end;
+
+destructor TClienteModel.destroy;
+begin
+  FreeAndNil(FQuery);
+  FreeAndNil(FCliente);
+  inherited;
+end;
+
+function TClienteModel.GetCliente: TClienteModeloDB;
+begin
+  with FQuery do
+  begin
+    Close;
+
+    with SQL do
+    begin
+      Clear;
+
+      Add('Select id,Nome,cidade,uf from cliente where id = '+Fid.ToString);
+    end;
+
+    try
+      open;
+    except On E: Exception do
+      raise Exception.Create('Erro ao buscar cliente :'+e.Message);
+    end;
+
+
+  end;
+end;
+
+function TClienteModel.Gravar: Boolean;
+begin
+  with FQuery do
+  begin
+    Close;
+
+    with SQL do
+    begin
+      Clear;
+
+      if FId = 0 then
+      begin
+        Add('Insert into cliente(Nome,cidade,uf)');
+        Add('values');
+        Add('("'+FNome+'","'+Fcidade+'","'+Fuf+'")');
+      end
+        else
+        begin
+          Add('Update Cliente set ');
+          Add('Nome = "'+FNome+'", ');
+          Add('cidade= "'+Fcidade+'", ');
+          Add('uf = "'+Fuf+'" ');
+          Add('where id = '+fid.ToString+' ');
+        end;
+    end;
+
+    try
+      ExecSQL;
+      Result := True;
+    except on E: Exception do
+      raise Exception.Create('Erro ao gravar cliente '+ E.Message);
+    end;
+
+  end;
+end;
+
+function TClienteModel.id(AValue: integer): iCliente;
+begin
+  FId := AValue;
+  Result := Self;
+end;
+
+function TClienteModel.Listar(AMemTable: TFDMemTable): Boolean;
+begin
+  AMemTable.Close;
+  AMemTable.CreateDataSet;
+
+  Result := False;
+
+  with FQuery do
+  begin
+    Close;
+
+    with SQL do
+    begin
+      Clear;
+
+      Add('Select id,Nome,cidade,uf from cliente');
+    end;
+
+    try
+      Open;
+    except on E: Exception do
+      raise Exception.Create('Erro na consulta '+ E.Message);
+    end;
+
+    while not Eof do
+    begin
+      AMemTable.Append;
+      AMemTable.FieldByName('id').AsInteger := FieldByName('id').AsInteger;
+      AMemTable.FieldByName('nome').AsString := FieldByName('nome').AsString;
+      AMemTable.FieldByName('cidade').AsString := FieldByName('cidade').AsString;
+      AMemTable.FieldByName('uf').AsString := FieldByName('uf').AsString;
+      AMemTable.Post;
+
+      Next;
+    end;
+
+  end;
+
+  Result := True;
+end;
+
+class function TClienteModel.New: iCliente;
+begin
+  Result := Self.create;
+end;
+
+function TClienteModel.Nome(AVAlue: string): iCliente;
+begin
+  FNome := AVAlue;
+  Result := Self;
+end;
+
+function TClienteModel.uf(AValue: string): iCliente;
+begin
+  Fuf := AValue;
+  Result := Self;
+end;
+
+end.

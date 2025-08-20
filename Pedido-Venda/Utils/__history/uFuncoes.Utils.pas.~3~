@@ -1,0 +1,50 @@
+unit uFuncoes.Utils;
+
+interface
+
+  uses
+    system.SysUtils;
+
+   type
+
+  TAuxiliar = class
+    private
+
+    public
+      class function OnlyNumber(const S: string): string;
+      class function FloatFormat(const v : string): string;
+
+  end;
+implementation
+
+{ TAuxiliar }
+
+class function TAuxiliar.FloatFormat(const v: string): string;
+var
+  meuDouble: Double;
+  meuString: string;
+begin
+
+end;
+
+class function TAuxiliar.OnlyNumber(const S: string): string;
+var
+  vText : PChar;
+begin
+  vText := PChar(S);
+  Result := '';
+
+  while (vText^ <> #0) do
+  begin
+    {$IFDEF UNICODE}
+    if CharInSet(vText^, ['0'..'9']) then
+    {$ELSE}
+    if vText^ in ['0'..'9'] then
+    {$ENDIF}
+      Result := Result + vText^;
+
+    Inc(vText);
+  end;
+end;
+
+end.

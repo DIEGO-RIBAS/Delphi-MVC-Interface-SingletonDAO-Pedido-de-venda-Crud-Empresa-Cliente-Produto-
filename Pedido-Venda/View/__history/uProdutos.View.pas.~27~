@@ -1,0 +1,234 @@
+unit uProdutos.View;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Buttons, Vcl.StdCtrls,
+  dxGDIPlusClasses, Vcl.ExtCtrls, Vcl.ComCtrls, FireDAC.Stan.Intf,
+  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
+  FireDAC.Phys.Intf, FireDAC.DApt.Intf, Data.DB, FireDAC.Comp.DataSet,
+  FireDAC.Comp.Client, Vcl.Grids, Vcl.DBGrids, numedit;
+
+type
+  TfrmProdutos = class(TForm)
+    Panel1: TPanel;
+    Image1: TImage;
+    Label1: TLabel;
+    SpeedButton2: TSpeedButton;
+    StatusBar1: TStatusBar;
+    PageControl1: TPageControl;
+    tsConsulta: TTabSheet;
+    Tsdados: TTabSheet;
+    mProdutos: TFDMemTable;
+    mProdutosid: TIntegerField;
+    dsProdutos: TDataSource;
+    mProdutosdescricao: TStringField;
+    mProdutosprecoVenda: TFloatField;
+    GroupBox1: TGroupBox;
+    SpeedButton1: TSpeedButton;
+    SpeedButton5: TSpeedButton;
+    GridClientes: TDBGrid;
+    Panel2: TPanel;
+    SpeedButton3: TSpeedButton;
+    btnExcluir: TSpeedButton;
+    SpeedButton4: TSpeedButton;
+    btnPrimeiro: TSpeedButton;
+    btnAnterior: TSpeedButton;
+    btnProximo: TSpeedButton;
+    btnUltimo: TSpeedButton;
+    GroupBox2: TGroupBox;
+    Label2: TLabel;
+    Label3: TLabel;
+    edtCodProduto: TEdit;
+    edtDescricao: TEdit;
+    edtPreco: TNumberEdit;
+    Label4: TLabel;
+    procedure SpeedButton2Click(Sender: TObject);
+    procedure SpeedButton1Click(Sender: TObject);
+    procedure btnExcluirClick(Sender: TObject);
+    procedure SpeedButton4Click(Sender: TObject);
+    procedure SpeedButton3Click(Sender: TObject);
+    procedure btnUltimoClick(Sender: TObject);
+    procedure btnProximoClick(Sender: TObject);
+    procedure btnAnteriorClick(Sender: TObject);
+    procedure btnPrimeiroClick(Sender: TObject);
+    procedure SpeedButton5Click(Sender: TObject);
+  private
+    { Private declarations }
+    procedure Limpar;
+    function ValidaCampos : Boolean;
+    procedure CarregaDados(idProduto : integer);
+  public
+    { Public declarations }
+  end;
+
+var
+  frmProdutos: TfrmProdutos;
+
+implementation
+
+  uses
+    uProdutos.Model,
+    uProduto.ModeloDB;
+
+{$R *.dfm}
+
+procedure TfrmProdutos.btnAnteriorClick(Sender: TObject);
+begin
+  if mProdutos.IsEmpty then
+    Exit;
+
+  mProdutos.Prior;
+
+  if mprodutosid.AsString = edtCodProduto.Text then
+    Exit;
+
+  CarregaDados;
+end;
+
+procedure TfrmProdutos.btnExcluirClick(Sender: TObject);
+begin
+  if edtCodProduto.Text <> '' then
+  begin
+    if Application.MessageBox('Confirma a exclusão do cliente ?','Confirmação !',MB_ICONQUESTION + MB_YESNO)= ID_YES then
+    if  TProdutosModel
+                     .New
+                     .id(StrToIntDef(edtCodProduto.Text,0))
+                     .Deletar then
+    begin
+      limpar;
+      Application.MessageBox('Exclusão realizada com sucesso !','Informação !',MB_ICONMASK);
+    end;
+  end;
+end;
+
+procedure TfrmProdutos.btnPrimeiroClick(Sender: TObject);
+begin
+  if mProdutos.IsEmpty then
+    Exit;
+
+  mProdutos.First;
+
+  if mprodutosid.AsString = edtCodProduto.Text then
+    Exit;
+
+  CarregaDados;
+end;
+
+procedure TfrmProdutos.btnProximoClick(Sender: TObject);
+begin
+  if mProdutos.IsEmpty then
+    Exit;
+
+  mProdutos.Next;
+
+  if mprodutosid.AsString = edtCodProduto.Text then
+    Exit;
+
+  CarregaDados;
+end;
+
+procedure TfrmProdutos.btnUltimoClick(Sender: TObject);
+begin
+  if mProdutos.IsEmpty then
+    Exit;
+
+  mProdutos.Last;
+
+  if mprodutosid.AsString = edtCodProduto.Text then
+    Exit;
+
+  CarregaDados;
+end;
+
+procedure TfrmProdutos.CarregaDados(idProduto : integer);
+var
+  LProduto : TProdutoModeloDb;
+begin
+  LProduto :=   TProdutosModel
+                              .New
+                              .id(idProduto)
+                              .GetProduto;
+
+  with LProduto do
+  begin
+    edtCodProduto.Text := id.ToString;
+    edtDescricao.Text  := descricao;
+    edtPreco.Value     := preco;
+  end;
+
+end;
+
+procedure TfrmProdutos.Limpar;
+begin
+  edtCodProduto.Clear;
+  edtDescricao.Clear;
+  edtPreco.Value := 0;
+end;
+
+procedure TfrmProdutos.SpeedButton1Click(Sender: TObject);
+begin
+  TProdutosModel
+                .New
+                .Listar(mProdutos);
+end;
+
+procedure TfrmProdutos.SpeedButton2Click(Sender: TObject);
+begin
+  Close;
+end;
+
+procedure TfrmProdutos.SpeedButton3Click(Sender: TObject);
+begin
+  if ValidaCampos then
+  begin
+    if TProdutosModel
+                  .New
+                  .id(StrToIntDef(edtCodProduto.Text,0))
+                  .descricao(edtDescricao.Text)
+                  .preco(edtPreco.Value)
+                  .Gravar then
+    begin
+      Limpar;
+      Application.MessageBox('Registro armazenado com sucesso !','Informação !',MB_ICONMASK);
+    end;
+  end;
+end;
+
+procedure TfrmProdutos.SpeedButton4Click(Sender: TObject);
+begin
+  Limpar;
+end;
+
+procedure TfrmProdutos.SpeedButton5Click(Sender: TObject);
+begin
+  if mProdutos.RecordCount > 0 then
+  begin
+    PageControl1.ActivePageIndex := 1;
+    CarregaDados;
+  end;
+end;
+
+function TfrmProdutos.ValidaCampos: Boolean;
+begin
+  Result := False;
+
+  if edtDescricao.Text = '' then
+  begin
+    Application.MessageBox('Campo obrigatório não preenchido !','Atenção !',MB_ICONMASK);
+    edtDescricao.SetFocus;
+    Exit;
+  end;
+
+  if edtPreco.Value <= 0 then
+  begin
+    Application.MessageBox('Campo obrigatório não preenchido !','Atenção !',MB_ICONMASK);
+    edtPreco.SetFocus;
+    Exit;
+  end;
+
+  Result := True;
+end;
+
+end.

@@ -1,0 +1,376 @@
+unit uPedidos.Model;
+
+interface
+
+  uses
+    System.SysUtils,
+    FireDAC.Comp.Client,
+    uPedidos.implements,
+    uPedido.ModeloDB;
+
+  type
+
+  TPedidosModel = class(TInterfacedObject, iPedidos)
+    private
+      FQuery : TFDQuery;
+
+      FPedido : TPedidoModeloDB;
+
+      Fid          : Integer;
+      FcodCliente  : Integer;
+      FnomeCliente : string;
+      FdtDe        : string;
+      FdtAte       : string;
+
+      function Id(Avalue : integer): iPedidos;
+      function codCliente(AValue : integer): iPedidos;
+      function NomeCliente(AValue : string): iPedidos;
+
+      // para pesquisa
+      function dtDE(AVAlue : string):iPedidos;
+      function dtAte(AVAlue : string):iPedidos;
+
+
+      // poderia usar os campos acima para gravar e passar como parametro somente o Itens( TFDMemTable )
+      // Mas resolvi fazer assim pra usar generics na hora de gravar o pedido
+      function Gravar(Pedido : TPedidoModeloDB):Boolean;
+
+      // Poderia retornar uma lista generics, mas resolvi fazer parametro( TFDMemTable )
+      function Listar(mPedidos : TFDMemTable):Boolean;
+
+      // Devolve um pedido
+      function GetPedido : TPedidoModeloDB;
+
+      function Deletar(idPedido : Integer):Boolean;
+
+      function deletarItem(idItem : integer): Boolean;
+
+    public
+
+      class function New : iPedidos;
+
+      constructor Create;
+      destructor destroy;override;
+  end;
+
+implementation
+
+  uses uDao.ConexaoSingleton;
+
+{ TPedidosModel }
+
+function TPedidosModel.codCliente(AValue: integer): iPedidos;
+begin
+  FcodCliente := AValue;
+  Result := Self;
+end;
+
+constructor TPedidosModel.Create;
+begin
+  FQuery            := TFDQuery.Create(nil);
+  FQuery.Connection := TConexaoSingleton.GetInstance.Conexao;
+
+  FPedido := TPedidoModeloDB.Create;
+end;
+
+function TPedidosModel.Deletar(idPedido: Integer): Boolean;
+begin
+  Result := False;
+
+  with FQuery do
+  begin
+    Close;
+
+    with SQL do
+    begin
+      Clear;
+
+      Add('delete from pedido_itens where idPedido = '+ idPedido.ToString +';');
+      Add('delete from pedidos where id = '+idPedido.ToString+';');
+    end;
+
+    try
+      ExecSQL;
+      Result := True;
+    except On E: Exception do
+      raise Exception.Create('Erro ao deletar pedido');
+    end;
+  end;
+end;
+
+function TPedidosModel.deletarItem(idItem: integer): Boolean;
+begin
+  Result := False;
+  with FQuery do
+  begin
+    close;
+
+    with SQL do
+    begin
+      Clear;
+
+      Add('delete from pedido_itens where id = '+idItem.ToString);
+    end;
+
+    try
+      ExecSQL;
+      Result := True;
+    except On E: Exception do
+      raise Exception.Create('Erro ao deletar item : '+e.Message);
+    end;
+  end;
+end;
+
+destructor TPedidosModel.destroy;
+begin
+  FreeAndNil(FQuery);
+  FreeAndNil(FPedido);
+
+  inherited;
+end;
+
+function TPedidosModel.dtAte(AVAlue: string): iPedidos;
+begin
+  FdtAte := AVAlue;
+  Result := Self;
+end;
+
+function TPedidosModel.dtDE(AVAlue: string): iPedidos;
+begin
+  FdtDe := AVAlue;
+  Result := Self;
+end;
+
+function TPedidosModel.GetPedido: TPedidoModeloDB;
+begin
+  with FQuery do
+  begin
+    Close;
+
+    with SQL do
+    begin
+      Clear;
+
+      Add('select p.id as idPed, p.data,p.idCliente, p.vlrTotal, c.nome');
+      Add('from pedidos p');
+      Add('left join cliente c on c.id = p.idCliente');
+      Add('where p.id = '+fid.ToString+' ');
+    end;
+
+    try
+      open;
+    except On E: Exception  do
+      raise Exception.Create('Erro ao listar pedidos : '+E.Message) ;
+    end;
+
+    FPedido.id         := FieldByName('idPed').AsInteger;
+    FPedido.Data       := FieldByName('data').AsString;
+    FPedido.idCliente  := FieldByName('idCliente').AsInteger;
+    FPedido.ValorTotal := FieldByName('vlrTotal').AsFloat;
+    FPedido.NomeCli    := FieldByName('nome').AsString;
+
+    // ítens
+    Close;
+    with SQL do
+    begin
+      Clear;
+
+      Add('select i.id as itensID, i.idPedido, i.idProduto, i.Qtde, i.vlrUnitario,');
+      Add('p.Descricao ');
+      Add('from pedido_itens i');
+      Add('join produtos p on p.id = i.idProduto');
+      Add('where i.idPedido = '+FPedido.id.ToString+' ');
+    end;
+
+    try
+      open;
+    except On E: Exception  do
+      raise Exception.Create('Erro ao listar ítens do pedido : '+E.Message) ;
+    end;
+
+    while not Eof do
+    begin
+      with FPedido do
+      begin
+        Item.id := FieldByName('itensID').AsInteger;
+        Item.idPedido := FieldByName('idPedido').AsInteger;
+        Item.Qtde := FieldByName('Qtde').AsFloat;
+        Item.PrecoUn := FieldByName('vlrUnitario').AsFloat;
+        Item.Descricao := FieldByName('descricao').AsString;
+
+        AddItem(Item);
+      end;
+
+      Next;
+    end;
+
+  end;
+
+  Result := FPedido;
+end;
+
+function TPedidosModel.Gravar(Pedido: TPedidoModeloDB): Boolean;
+var
+  i, idPedido : Integer;
+begin
+  with FQuery do
+  begin
+    close;
+
+    with SQL do
+    begin
+      Clear;
+
+      if Pedido.id > 0 then
+      begin
+        Add('Update pedidos set');
+        Add('id=:id, data=:data,idCliente=:idCliente,vlrTotal=:vlrTotal');
+        ParamByName('id').AsInteger        := Pedido.id;
+        ParamByName('data').AsString       := Pedido.Data;
+        ParamByName('idCliente').AsInteger := Pedido.idCliente;
+        ParamByName('vlrTotal').AsFloat    := Pedido.ValorTotal;
+
+        try
+          ExecSQL;
+        except On E: Exception do
+          raise Exception.Create('Erro ao atualizar pedido :'+E.Message);
+        end;
+
+        for I := 0 to Pred(Pedido.Itens.Count) do
+        begin
+          Clear;
+
+          Add('Update pedido_itens set');
+          Add('id=:id, idPedido=:idPedido, idProduto=:idProduto,Qtde=:Qtde,vlrUnitario=:vlrUnitario');
+          ParamByName('id').AsInteger := Pedido.Itens[i].id;
+          ParamByName('idPedido').AsInteger := Pedido.Itens[i].idPedido;
+          ParamByName('idProduto').AsInteger := Pedido.Itens[i].idProduto;
+          ParamByName('Qtde').AsFloat := Pedido.Itens[i].Qtde;
+          ParamByName('vlrUnitario').AsFloat := Pedido.Itens[i].PrecoUn;
+
+          try
+            ExecSQL;
+          except On E: Exception do
+            raise Exception.Create('Erro ao atualizar ítens do pedido :'+E.Message);
+          end;
+        end;
+
+      end
+        else
+        begin
+          Close;
+
+          with SQL do
+          begin
+            Clear;
+
+            Add('Insert into pedidos(data,idCliente,vlrTotal)');
+            Add('values(:data,:idCliente,:vlrTotal);');
+            Add('select last_insert_rowid() as idPedido;');
+            ParamByName('data').AsString       := Pedido.Data;
+            ParamByName('idCliente').AsInteger := Pedido.idCliente;
+            ParamByName('vlrTotal').AsFloat    := Pedido.ValorTotal;
+
+            try
+              Open;
+              idPedido := FieldByName('idPedido').AsInteger;
+              close;
+            except On E: Exception do
+              raise Exception.Create('Erro ao inserir pedido :'+E.Message);
+            end;
+
+            for I := 0 to Pred(Pedido.Itens.Count) do
+              begin
+                Clear;
+
+                Add('Insert into pedido_itens(idPedido,idProduto,Qtde,vlrUnitario)');
+                Add('values(:idPedido,:idProduto,:Qtde,:vlrUnitario)');
+                ParamByName('idPedido').AsInteger := idPedido;
+                ParamByName('idProduto').AsInteger := Pedido.Itens[i].idProduto;
+                ParamByName('Qtde').AsFloat        := Pedido.Itens[i].Qtde;
+                ParamByName('vlrUnitario').AsFloat := Pedido.Itens[i].PrecoUn;
+
+                try
+                  ExecSQL;
+                  Result := True;
+                except On E: Exception do
+                  raise Exception.Create('Erro ao atualizar ítens do pedido :'+E.Message);
+                end;
+              end;
+          end;
+        end;
+
+    end;
+  end;
+end;
+
+function TPedidosModel.Id(Avalue: integer): iPedidos;
+begin
+  Fid := Avalue;
+  Result := Self;
+end;
+
+function TPedidosModel.Listar(mPedidos: TFDMemTable): Boolean;
+begin
+
+  with FQuery do
+  begin
+    Close;
+
+    with SQL do
+    begin
+      Clear;
+
+      Add('select p.id as idPed, p.data,p.idCliente,p.vlrTotal,');
+      Add('c.nome');
+      Add('from pedidos p');
+      Add('left join cliente c on c.id = p.idcliente');
+      Add('where p.id > 0');
+
+      if Fid > 0 then
+        Add('and p.id = '+Fid.ToString+' ');
+
+      if FcodCliente > 0 then
+        Add('and p.idCliente = '+FcodCliente.ToString+' ');
+
+      if FnomeCliente <> '' then
+        Add('and c.nome like "%'+FNomeCliente+'%" ');
+
+      if FdtDe <> '' then
+        Add('and p.data between "'+FdtDe+'" and "'+FdtAte+'" ');
+
+      try
+        open;
+      except
+        raise Exception.Create('Erro ao capturar pedidos');
+      end;
+
+      while not Eof do
+      begin
+        mPedidos.Append;
+        mPedidos.FieldByName('id').AsInteger        := FieldByName('idPed').AsInteger;
+        mPedidos.FieldByName('data').AsString       := FieldByName('data').AsString;
+        mPedidos.FieldByName('idCliente').AsInteger := FieldByName('idCliente').AsInteger;
+        mPedidos.FieldByName('Nome').AsString       := FieldByName('Nome').AsString;
+        mPedidos.FieldByName('vlrTotal').AsFloat    := FieldByName('vlrTotal').AsFloat;
+        mPedidos.Post;
+
+        Next;
+      end;
+    end;
+  end;
+
+end;
+
+class function TPedidosModel.New: iPedidos;
+begin
+  Result := Self.Create;
+end;
+
+function TPedidosModel.NomeCliente(AValue: string): iPedidos;
+begin
+  FnomeCliente := AValue;
+  Result := Self;
+end;
+
+end.

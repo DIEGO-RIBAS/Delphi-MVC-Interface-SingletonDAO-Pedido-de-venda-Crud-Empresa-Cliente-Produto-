@@ -1,0 +1,35 @@
+unit uPedidos.implements;
+
+interface
+  uses
+    uPedido.ModeloDB,
+    FireDAC.Comp.Client;
+
+  type
+
+  iPedidos = interface
+    function Id(Avalue : integer): iPedidos;
+    function codCliente(AValue : integer): iPedidos;
+    function NomeCliente(AValue : string): iPedidos;
+
+    // para pesquisa
+    function dtDE(AVAlue : string):iPedidos;
+    function dtAte(AVAlue : string):iPedidos;
+
+    // poderia usar os campos acima para gravar e passar como parametro somente o Itens( TFDMemTable )
+    // Mas resolvi fazer assim pra usar generics na hora de gravar o pedido
+    function Gravar(Pedido : TPedidoModeloDB):Boolean;
+
+    // Poderia retornar uma lista generics, mas resolvi fazer parametro( TFDMemTable )
+    function Listar(mPedidos : TFDMemTable):Boolean;
+
+    // Devolve um pedido
+    function GetPedido : TPedidoModeloDB;
+
+    function Deletar(idPedido : Integer):Boolean;
+    function deletarItem(idItem : integer): Boolean;
+  end;
+
+implementation
+
+end.

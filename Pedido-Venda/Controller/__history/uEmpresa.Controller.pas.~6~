@@ -1,0 +1,20 @@
+unit uEmpresa.Controller;
+
+interface
+
+  uses
+    Json,
+    uEmpresa.Implements;
+
+  type
+
+  TEmpressaController = class(TInterfacedObject, iEmpresaAPI)
+    private
+      function GetEmpresaAPI( aCNPJ : String ) : TJSONObject;
+    public
+      class function New : iEmpresaAPI;
+  end;
+
+implementation
+
+end.

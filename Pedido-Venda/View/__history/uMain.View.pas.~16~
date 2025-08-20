@@ -1,0 +1,74 @@
+unit uMain.View;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Buttons, Vcl.ExtCtrls, Vcl.ComCtrls,
+  Vcl.StdCtrls, FireDAC.UI.Intf, FireDAC.VCLUI.Wait, FireDAC.Stan.Intf,
+  FireDAC.Comp.UI;
+
+type
+  TfrmMain = class(TForm)
+    StatusBar1: TStatusBar;
+    Panel1: TPanel;
+    btnEmpresa: TSpeedButton;
+    btnFuncionario: TSpeedButton;
+    btnPedido: TSpeedButton;
+    btnProduto: TSpeedButton;
+    Label1: TLabel;
+    SpeedButton1: TSpeedButton;
+    procedure btnEmpresaClick(Sender: TObject);
+    procedure SpeedButton1Click(Sender: TObject);
+    procedure btnProdutoClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmMain: TfrmMain;
+
+implementation
+
+{$R *.dfm}
+
+uses
+   uListaEmpresa.View,
+   uCliente.View,
+   uProdutos.View;
+
+procedure TfrmMain.btnEmpresaClick(Sender: TObject);
+begin
+  try
+    Application.CreateForm(TfrmListaEmpresa, frmListaEmpresa);
+    frmListaEmpresa.ShowModal;
+  finally
+    FreeAndNil(frmListaEmpresa);
+  end;
+end;
+
+procedure TfrmMain.btnProdutoClick(Sender: TObject);
+begin
+  try
+    Application.CreateForm(TfrmProdutos, frmProdutos);
+    frmProdutos.PageControl1.ActivePageIndex := 1;
+    frmProdutos.ShowModal;
+  finally
+    FreeAndNil(frmProdutos);
+  end;
+end;
+
+procedure TfrmMain.SpeedButton1Click(Sender: TObject);
+begin
+  try
+    Application.CreateForm(TfrmClientes, frmClientes);
+    frmClientes.PageControl1.ActivePageIndex := 1;
+    frmClientes.ShowModal;
+  finally
+    FreeAndNil(frmClientes);
+  end;
+end;
+
+end.

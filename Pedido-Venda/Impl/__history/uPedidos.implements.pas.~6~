@@ -1,0 +1,16 @@
+unit uPedidos.implements;
+
+interface
+  uses
+    FireDAC.Comp.Client;
+
+
+  type
+
+  iPedidos = interface
+    function Gravar():
+  end;
+
+implementation
+
+end.

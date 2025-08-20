@@ -1,0 +1,24 @@
+unit uPedidos.implements;
+
+interface
+  uses
+    uPedido.ModeloDB,
+    FireDAC.Comp.Client;
+
+
+  type
+
+  iPedidos = interface
+    function Id(Avalue : integer): iPedidos;
+    function
+
+    // poderia usar os campos acima para gravar e passar como parametro somente o fdmemtableItens
+    // Mas resolvi fazer assim pra usar generics
+    function Gravar(Pedido : TPedidoModeloDB):Boolean;
+
+    function Listar
+  end;
+
+implementation
+
+end.

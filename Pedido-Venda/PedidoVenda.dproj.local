@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2025/08/19 15:04:30.000.383,=C:\Users\Diego\OneDrive\Documentos\Embarcadero\Studio\Projects\Unit5.pas</Transaction>
+    <Transaction>2025/08/19 15:05:34.000.663,C:\Users\Diego\OneDrive\Documentos\Embarcadero\Studio\Projects\Unit5.pas=D:\Delphi\Testes\Pedido-Venda\View\uMain.pas</Transaction>
+    <Transaction>2025/08/19 15:05:34.000.663,C:\Users\Diego\OneDrive\Documentos\Embarcadero\Studio\Projects\Unit5.dfm=D:\Delphi\Testes\Pedido-Venda\View\uMain.dfm</Transaction>
+    <Transaction>2025/08/19 15:05:43.000.670,C:\Users\Diego\OneDrive\Documentos\Embarcadero\Studio\Projects\Project6.dproj=D:\Delphi\Testes\Pedido-Venda\PedidoVenda.dproj</Transaction>
+    <Transaction>2025/08/19 15:06:00.000.958,D:\Delphi\Testes\Pedido-Venda\View\uMain.pas=D:\Delphi\Testes\Pedido-Venda\View\uMain.View.pas</Transaction>
+    <Transaction>2025/08/19 15:06:00.000.958,D:\Delphi\Testes\Pedido-Venda\View\uMain.dfm=D:\Delphi\Testes\Pedido-Venda\View\uMain.View.dfm</Transaction>
+    <Transaction>2025/08/19 15:09:19.000.243,=D:\Delphi\Testes\Pedido-Venda\View\uListaEmpresa.View.pas</Transaction>
+    <Transaction>2025/08/19 15:10:47.000.323,=D:\Delphi\Testes\Pedido-Venda\Entity\uEmpresas.Entity.pas</Transaction>
+    <Transaction>2025/08/19 15:11:42.000.389,=D:\Delphi\Testes\Pedido-Venda\View\uConsultaEmpresaAPI.View.pas</Transaction>
+    <Transaction>2025/08/19 15:19:32.000.660,=D:\Delphi\Testes\Pedido-Venda\Controller\uEmpresas.Controller.pas</Transaction>
+    <Transaction>2025/08/19 15:26:29.751,=D:\Delphi\Testes\Pedido-Venda\Impl\uEmpresa.Controller.Impl.pas</Transaction>
+    <Transaction>2025/08/19 15:32:06.329,D:\Delphi\Testes\Pedido-Venda\Controller\uEmpresas.Controller.pas=</Transaction>
+    <Transaction>2025/08/19 15:32:10.574,D:\Delphi\Testes\Pedido-Venda\Impl\uEmpresa.Controller.Impl.pas=</Transaction>
+    <Transaction>2025/08/19 15:34:09.174,=D:\Delphi\Testes\Pedido-Venda\Model\uEmpresa.Model.pas</Transaction>
+    <Transaction>2025/08/19 15:35:12.328,=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/19 15:35:36.431,D:\Delphi\Testes\Pedido-Venda\Impl\uEmpresa.Implements.pas=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/19 15:39:53.324,=D:\Delphi\Testes\Pedido-Venda\DAO\uDao.ConexaoSingleton.pas</Transaction>
+    <Transaction>2025/08/19 15:59:44.816,=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/19 16:00:01.397,D:\Delphi\Testes\Pedido-Venda\Controller\uEmpresa.Controller.pas=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/19 16:02:15.694,=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/19 16:28:09.147,=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/19 16:29:05.800,=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/19 16:29:16.653,D:\Delphi\Testes\Pedido-Venda\View\uCliente.View.pas=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/19 16:29:16.653,D:\Delphi\Testes\Pedido-Venda\View\uCliente.View.dfm=D:\Delphi\Testes\Pedido-Venda\Unit1.dfm</Transaction>
+    <Transaction>2025/08/19 16:42:04.980,=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/19 16:42:19.949,D:\Delphi\Testes\Pedido-Venda\Model\uCliente.Model.pas=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/19 16:42:48.281,=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/19 16:43:04.003,D:\Delphi\Testes\Pedido-Venda\Impl\uCliente.Implements.pas=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/19 17:43:29.459,=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/19 17:43:44.243,D:\Delphi\Testes\Pedido-Venda\View\uProdutos.View.pas=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/19 17:43:44.243,D:\Delphi\Testes\Pedido-Venda\View\uProdutos.View.dfm=D:\Delphi\Testes\Pedido-Venda\Unit1.dfm</Transaction>
+    <Transaction>2025/08/19 17:51:16.464,=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/19 17:51:28.017,D:\Delphi\Testes\Pedido-Venda\Model\uProdutos.Model.pas=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/19 17:52:05.257,=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/19 17:52:21.099,D:\Delphi\Testes\Pedido-Venda\Impl\uProdutos.Implements.pas=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/19 20:30:33.123,=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/19 20:30:46.466,D:\Delphi\Testes\Pedido-Venda\View\uPedido.View.pas=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/19 20:30:46.466,D:\Delphi\Testes\Pedido-Venda\View\uPedido.View.dfm=D:\Delphi\Testes\Pedido-Venda\Unit1.dfm</Transaction>
+    <Transaction>2025/08/19 20:36:11.738,=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/19 20:38:14.663,D:\Delphi\Testes\Pedido-Venda\View\uPedidos.implements.pas=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/19 20:38:32.331,D:\Delphi\Testes\Pedido-Venda\Impl\uPedidos.implements.pas=D:\Delphi\Testes\Pedido-Venda\View\uPedidos.implements.pas</Transaction>
+    <Transaction>2025/08/19 20:44:52.157,=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/19 20:45:15.786,D:\Delphi\Testes\Pedido-Venda\Entity\uPedido.ModeloDB.pas=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/19 21:20:49.394,=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/19 21:21:00.575,D:\Delphi\Testes\Pedido-Venda\Model\uPedidos.Model.pas=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/20 10:31:35.577,=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/20 10:31:54.089,D:\Delphi\Testes\Pedido-Venda\Utils\uFuncoes.Utils.pas=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/20 10:50:21.070,=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/20 10:50:35.508,D:\Delphi\Testes\Pedido-Venda\Entity\uCliente.ModeloDB.pas=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/20 11:18:41.178,=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+    <Transaction>2025/08/20 11:18:51.689,D:\Delphi\Testes\Pedido-Venda\Entity\uProduto.ModeloDB.pas=D:\Delphi\Testes\Pedido-Venda\Unit1.pas</Transaction>
+  </Transactions>
+</BorlandProject>

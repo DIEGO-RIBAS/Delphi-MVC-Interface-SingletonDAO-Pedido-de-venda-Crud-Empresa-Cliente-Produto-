@@ -1,0 +1,96 @@
+unit uListaEmpresa.View;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, dxGDIPlusClasses,
+  Vcl.ExtCtrls, Data.DB, Vcl.Grids, Vcl.DBGrids, Vcl.ComCtrls, Datasnap.DBClient, uEmpresas.Entity,
+  Vcl.Buttons;
+
+type
+  TfrmListaEmpresa = class(TForm)
+    Panel1: TPanel;
+    Image1: TImage;
+    StatusBar1: TStatusBar;
+    Panel2: TPanel;
+    GroupBox1: TGroupBox;
+    DBGrid1: TDBGrid;
+    cdsEmpresas: TClientDataSet;
+    dsEmpresas: TDataSource;
+    cdsEmpresasID: TIntegerField;
+    cdsEmpresasRazaoSocial: TStringField;
+    cdsEmpresasCNPJ: TStringField;
+    cdsEmpresasEmail: TStringField;
+    SpeedButton1: TSpeedButton;
+    Label1: TLabel;
+    Label2: TLabel;
+    procedure FormShow(Sender: TObject);
+    procedure SpeedButton1Click(Sender: TObject);
+  private
+    { Private declarations }
+    procedure getLista;
+  public
+    { Public declarations }
+  end;
+
+var
+  frmListaEmpresa: TfrmListaEmpresa;
+
+implementation
+
+  uses
+    uConsultaEmpresaAPI.View,
+    uEmpresa.Model;
+
+{$R *.dfm}
+
+{ TfrmListaEmpresa }
+
+procedure TfrmListaEmpresa.FormShow(Sender: TObject);
+begin
+  getLista;
+end;
+
+procedure TfrmListaEmpresa.getLista;
+var
+  Lista : TListaEmpresas; // generics
+  i     : Integer;
+begin
+  cdsEmpresas.close;
+  cdsEmpresas.CreateDataSet;
+  cdsEmpresas.Open;
+
+  try
+    Lista := TEmpresaModel
+                          .New
+                          .GetLista;
+
+    for I := 0 to Pred(Lista.ListaEmpresas.Count) do
+    begin
+      cdsEmpresas.Append;
+      cdsEmpresasid.Value          := Lista.ListaEmpresas[i].ID;
+      cdsEmpresasRazaoSocial.Value := Lista.ListaEmpresas[i].RazaoSocial;
+      cdsEmpresasCNPJ.Value        := Lista.ListaEmpresas[i].Cnpj;
+      cdsEmpresasEmail.Value       := Lista.ListaEmpresas[i].Email;
+      cdsEmpresas.Post;
+    end;
+
+  finally
+    FreeAndNil(Lista);
+  end;
+end;
+
+procedure TfrmListaEmpresa.SpeedButton1Click(Sender: TObject);
+begin
+  try
+    Application.CreateForm(TfrmConsultaEmpresaAPI, frmConsultaEmpresaAPI);
+    frmConsultaEmpresaAPI.ShowModal;
+  finally
+    FreeAndNil(frmConsultaEmpresaAPI);
+
+    getLista;
+  end;
+end;
+
+end.

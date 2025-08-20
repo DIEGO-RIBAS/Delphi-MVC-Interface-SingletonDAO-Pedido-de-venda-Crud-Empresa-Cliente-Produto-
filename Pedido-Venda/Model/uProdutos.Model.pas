@@ -1,0 +1,219 @@
+unit uProdutos.Model;
+
+interface
+
+  uses
+    system.SysUtils,
+    FireDAC.Comp.Client,
+    uProdutos.Implements,
+    uProduto.ModeloDB;
+
+  type
+
+  TProdutosModel = class(TInterfacedObject, iProdutos)
+  private
+    FQuery : TFDQuery;
+
+    FProduto : TProdutoModeloDb;
+
+    Fid : Integer;
+    Fdescricao : string;
+    FPreco : Double;
+
+    function id(AValue : integer): iProdutos;
+    function descricao(Avalue : string):iProdutos;
+    function preco(Avalue : double):iProdutos;
+
+    function Gravar : Boolean;
+    function Listar(AMemTable : TFDMemTable): Boolean;
+    function Deletar : Boolean;
+    function GetProduto : TProdutoModeloDb;
+  public
+
+    class function New : iProdutos;
+
+    constructor create;
+    destructor destroy; override;
+  end;
+
+
+implementation
+
+  uses
+    uDao.ConexaoSingleton;
+
+{ TProdutosModel }
+
+constructor TProdutosModel.create;
+begin
+  FQuery := TFDQuery.Create(nil);
+  FQuery.Connection :=   TConexaoSingleton.GetInstance.Conexao;
+
+  FProduto := TProdutoModeloDb.Create;
+end;
+
+function TProdutosModel.Deletar: Boolean;
+begin
+  Result := False;
+
+  with FQuery do
+  begin
+    Close;
+
+    with SQL do
+    begin
+      Clear;
+
+      Add('Delete from produtos where id = '+ fid.ToString);
+    end;
+
+    try
+      ExecSQL;
+      Result := True;
+    except On E: Exception do
+      raise Exception.Create('Erro ao deletar produto : '+E.Message);
+    end;
+  end;
+end;
+
+function TProdutosModel.descricao(Avalue: string): iProdutos;
+begin
+  Fdescricao := Avalue;
+  Result := Self;
+end;
+
+destructor TProdutosModel.destroy;
+begin
+  FreeAndNil(FQuery);
+  FreeAndNil(FProduto);
+  inherited;
+end;
+
+function TProdutosModel.GetProduto: TProdutoModeloDb;
+begin
+  with FQuery do
+  begin
+    Close;
+
+    with SQL do
+    begin
+      Clear;
+
+      Add('select id,descricao,preco from produtos where id = '+ Fid.ToString);
+    end;
+
+    try
+      Open;
+    except On E: Exception do
+      raise Exception.Create('erro ao capturar produto');
+    end;
+
+    with FProduto do
+    begin
+      id := FieldByName('id').AsInteger;
+      descricao := FieldByName('descricao').AsString;
+      preco := FieldByName('preco').AsFloat;
+    end;
+
+    Result := FProduto;
+  end;
+end;
+
+function TProdutosModel.Gravar: Boolean;
+var
+  pVenda : string;
+begin
+  Result := false;
+
+  with FQuery do
+  begin
+    Close;
+
+    with SQL do
+    begin
+      Clear;
+
+      if Fid > 0 then
+      begin
+        Add('Update Produtos set');
+        Add('descricao = :descricao, ');
+        Add('preco = :preco ');
+        Add('where id = :id');
+        ParamByName('id').AsInteger := Fid;
+        ParamByName('descricao').AsString := Fdescricao;
+        ParamByName('preco').AsFloat := FPreco;
+      end
+        else
+        begin
+          Add('Insert into Produtos(descricao,preco)');
+          Add('values(:descricao,:preco)');
+          ParamByName('descricao').AsString := Fdescricao;
+          ParamByName('preco').AsFloat := FPreco;
+        end;
+
+      try
+        ExecSQL;
+        Result := True;
+      except On E: Exception do
+        raise Exception.Create('Erro ao gravar produto : '+e.Message);
+      end;
+    end;
+  end;
+end;
+
+function TProdutosModel.id(AValue: integer): iProdutos;
+begin
+  Fid := AValue;
+  Result := Self;
+end;
+
+function TProdutosModel.Listar(AMemTable: TFDMemTable): Boolean;
+begin
+  Result := False;
+
+  AMemTable.Close;
+  AMemTable.CreateDataSet;
+
+  with FQuery do
+  begin
+    Close;
+
+    with SQL do
+    begin
+      Clear;
+
+      Add('Select id,descricao,preco from produtos');
+    end;
+
+    try
+      open;
+      Result := True;
+    except On E: Exception do
+      raise Exception.Create('Erro ao litsra produtos : '+ e.Message);
+    end;
+
+    while not Eof do
+    begin
+      AMemTable.Append;
+      AMemTable.FieldByName('id').AsInteger := FieldByName('id').AsInteger;
+      AMemTable.FieldByName('descricao').AsString := FieldByName('descricao').AsString;
+      AMemTable.FieldByName('precoVenda').AsFloat := FieldByName('preco').AsFloat;
+      AMemTable.Post;
+
+      Next;
+    end;
+  end;
+end;
+
+class function TProdutosModel.New: iProdutos;
+begin
+  Result := Self.create;
+end;
+
+function TProdutosModel.preco(Avalue: double): iProdutos;
+begin
+  FPreco := Avalue;
+  Result := Self;
+end;
+
+end.

@@ -1,0 +1,45 @@
+unit uEmpresa.Controller;
+
+interface
+
+  uses
+    System.SysUtils,
+    System.JSON,
+    RESTRequest4D,
+    IpPeerClient,
+    uEmpresa.Implements;
+
+  type
+
+  TEmpressaController = class(TInterfacedObject, iEmpresaAPI)
+    private
+      function GetEmpresaAPI( aCNPJ : String ) : TJSONObject;
+    public
+      class function New : iEmpresaAPI;
+  end;
+
+implementation
+
+{ TEmpressaController }
+
+function TEmpressaController.GetEmpresaAPI(aCNPJ: String): TJSONObject;
+var
+  Resp : IResponse;
+begin
+  try
+    Resp := TRequest.New.BaseURL('https://publica.cnpj.ws/')
+                        .Resource('cnpj/'+aCNPJ)
+                        .Accept('application/json')
+                        // .BasicAuthentication('login','senha')
+                        .Get;
+  finally
+    Result := TJSONObject.ParseJSONValue(TEncoding.UTF8.GetBytes(Resp.Content),0) as TJSONObject;
+  end;
+end;
+
+class function TEmpressaController.New: iEmpresaAPI;
+begin
+  Result := Self.Create;
+end;
+
+end.

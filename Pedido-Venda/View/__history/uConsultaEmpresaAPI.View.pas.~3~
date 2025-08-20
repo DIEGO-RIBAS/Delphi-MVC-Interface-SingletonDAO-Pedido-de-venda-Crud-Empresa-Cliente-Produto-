@@ -1,0 +1,129 @@
+unit uConsultaEmpresaAPI.View;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.StdCtrls,
+  dxGDIPlusClasses, Vcl.ExtCtrls, Vcl.Mask, Vcl.Buttons;
+
+type
+  TfrmConsultaEmpresaAPI = class(TForm)
+    StatusBar1: TStatusBar;
+    Panel1: TPanel;
+    Image1: TImage;
+    lblMsgm: TLabel;
+    GroupBox1: TGroupBox;
+    edtCNPJ: TMaskEdit;
+    Label2: TLabel;
+    SpeedButton1: TSpeedButton;
+    edtRazaoSocial: TEdit;
+    Label3: TLabel;
+    edtEmail: TEdit;
+    Label4: TLabel;
+    Panel2: TPanel;
+    SpeedButton2: TSpeedButton;
+    Label1: TLabel;
+    Timer1: TTimer;
+    procedure SpeedButton1Click(Sender: TObject);
+    procedure SpeedButton2Click(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
+  private
+    { Private declarations }
+    function FormatarCNPJ( aCNPJ : String ) : string;
+    procedure clearFields;
+  public
+    { Public declarations }
+  end;
+
+var
+  frmConsultaEmpresaAPI: TfrmConsultaEmpresaAPI;
+
+implementation
+
+  uses
+    uEmpresas.Controller;
+
+{$R *.dfm}
+
+
+procedure TfrmConsultaEmpresaAPI.clearFields;
+begin
+  edtCNPJ.Text        :=  '';
+  edtRazaoSocial.Text := '';
+  edtEmail.Text       := '';
+end;
+
+function TfrmConsultaEmpresaAPI.FormatarCNPJ(aCNPJ: String): string;
+begin
+    Result := StringReplace(aCNPJ, '.','',[rfReplaceAll]);
+    Result := StringReplace(Result, '/','',[rfReplaceAll]);
+    Result := StringReplace(Result, '-','',[rfReplaceAll]);
+end;
+
+procedure TfrmConsultaEmpresaAPI.SpeedButton1Click(Sender: TObject);
+var
+  EmpresaController : TEmpresasController;
+begin
+  EmpresaController := TEmpresasController.Create;
+  try
+    lblMsgm.Caption := 'Realizando consulta ... Aguarde !';
+    lblMsgm.Repaint;
+
+    EmpresaController.Empresa := EmpresaController.ConsultarCNPJApi( FormatarCNPJ( edtCNPJ.Text ));
+
+    with EmpresaController do
+    begin
+      edtRazaoSocial.Text := Empresa.RazaoSocial;
+      // edtEmail.Text       := Empresa.Email;   não existe email no json de retorno
+    end;
+
+  finally
+    FreeAndNil(EmpresaController);
+    lblMsgm.Caption := '';
+  end;
+end;
+
+procedure TfrmConsultaEmpresaAPI.SpeedButton2Click(Sender: TObject);
+var
+  EmpresaController : TEmpresasController;
+begin
+  try
+    EmpresaController.Empresa := EmpresaController.ConsultarCNPJLocal( FormatarCNPJ( edtCNPJ.Text ));
+
+    if EmpresaController.Empresa.Cnpj <> '' then
+    begin
+      Application.MessageBox('Empresa já cadastrada !','Atenção !',MB_ICONMASK);
+      Exit;
+    end
+      else
+      begin
+
+        with EmpresaController do
+        begin
+          Empresa.RazaoSocial := edtRazaoSocial.Text;
+          Empresa.Cnpj        := FormatarCNPJ(edtCNPJ.Text);
+          Empresa.Email       := edtEmail.Text;
+        end;
+
+        if EmpresaController.Gravar then
+        begin
+          lblMsgm.Caption := 'Registro armazenado com sucesso';
+          lblMsgm.Repaint;
+          Timer1.Enabled := True;
+
+          clearFields;
+        end;
+      end;
+  finally
+    FreeAndNil(EmpresaController);
+  end;
+end;
+
+procedure TfrmConsultaEmpresaAPI.Timer1Timer(Sender: TObject);
+begin
+  Timer1.Enabled  := false;
+  lblMsgm.Caption := 'Empresa';
+end;
+
+end.

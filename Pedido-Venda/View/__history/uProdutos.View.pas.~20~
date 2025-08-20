@@ -1,0 +1,130 @@
+unit uProdutos.View;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Buttons, Vcl.StdCtrls,
+  dxGDIPlusClasses, Vcl.ExtCtrls, Vcl.ComCtrls, FireDAC.Stan.Intf,
+  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
+  FireDAC.Phys.Intf, FireDAC.DApt.Intf, Data.DB, FireDAC.Comp.DataSet,
+  FireDAC.Comp.Client, Vcl.Grids, Vcl.DBGrids, numedit;
+
+type
+  TfrmProdutos = class(TForm)
+    Panel1: TPanel;
+    Image1: TImage;
+    Label1: TLabel;
+    SpeedButton2: TSpeedButton;
+    StatusBar1: TStatusBar;
+    PageControl1: TPageControl;
+    tsConsulta: TTabSheet;
+    Tsdados: TTabSheet;
+    mProdutos: TFDMemTable;
+    mProdutosid: TIntegerField;
+    dsProdutos: TDataSource;
+    mProdutosdescricao: TStringField;
+    mProdutosprecoVenda: TFloatField;
+    GroupBox1: TGroupBox;
+    SpeedButton1: TSpeedButton;
+    SpeedButton5: TSpeedButton;
+    GridClientes: TDBGrid;
+    Panel2: TPanel;
+    SpeedButton3: TSpeedButton;
+    btnExcluir: TSpeedButton;
+    SpeedButton4: TSpeedButton;
+    btnPrimeiro: TSpeedButton;
+    btnAnterior: TSpeedButton;
+    btnProximo: TSpeedButton;
+    btnUltimo: TSpeedButton;
+    GroupBox2: TGroupBox;
+    Label2: TLabel;
+    Label3: TLabel;
+    edtCodProduto: TEdit;
+    edtDescricao: TEdit;
+    edtPreco: TNumberEdit;
+    Label4: TLabel;
+    procedure SpeedButton2Click(Sender: TObject);
+    procedure SpeedButton1Click(Sender: TObject);
+    procedure btnExcluirClick(Sender: TObject);
+    procedure SpeedButton4Click(Sender: TObject);
+  private
+    { Private declarations }
+    procedure Limpar;
+    function ValidaCampos : Boolean;
+  public
+    { Public declarations }
+  end;
+
+var
+  frmProdutos: TfrmProdutos;
+
+implementation
+
+  uses
+    uProdutos.Model;
+
+{$R *.dfm}
+
+procedure TfrmProdutos.btnExcluirClick(Sender: TObject);
+begin
+  if edtCodProduto.Text <> '' then
+  begin
+    if Application.MessageBox('Confirma a exclusão do cliente ?','Confirmação !',MB_ICONQUESTION + MB_YESNO)= ID_YES then
+    if  TProdutosModel
+                     .New
+                     .id(StrToIntDef(edtCodProduto.Text,0))
+                     .Deletar then
+    begin
+      limpar;
+      Application.MessageBox('Exclusão realizada com sucesso !','Informação !',MB_ICONMASK);
+    end;
+  end;
+end;
+
+procedure TfrmProdutos.Limpar;
+begin
+  edtCodProduto.Clear;
+  edtDescricao.Clear;
+  edtPreco.Value := 0;
+end;
+
+procedure TfrmProdutos.SpeedButton1Click(Sender: TObject);
+begin
+  TProdutosModel
+                .New
+                .Listar(mProdutos);
+end;
+
+procedure TfrmProdutos.SpeedButton2Click(Sender: TObject);
+begin
+  Close;
+end;
+
+procedure TfrmProdutos.SpeedButton4Click(Sender: TObject);
+begin
+  TListSortCompareFunc;
+end;
+
+function TfrmProdutos.ValidaCampos: Boolean;
+begin
+  Result := False;
+
+  if edtDescricao.Text = '' then
+  begin
+    Application.MessageBox('Campo obrigatório não preenchido !','Atenção !',MB_ICONMASK);
+    edtDescricao.SetFocus;
+    Exit;
+  end;
+
+  if edtPreco.Value <= 0 then
+  begin
+    Application.MessageBox('Campo obrigatório não preenchido !','Atenção !',MB_ICONMASK);
+    edtPreco.SetFocus;
+    Exit;
+  end;
+
+  Result := True;
+end;
+
+end.

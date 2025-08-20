@@ -1,0 +1,24 @@
+unit uProdutos.Implements;
+
+interface
+  uses
+
+  uProduto.ModeloDB,
+  FireDAC.Comp.Client;
+
+  type
+
+  iProdutos = interface
+    function id(AValue : integer): iProdutos;
+    function descricao(Avalue : string):iProdutos;
+    function preco(Avalue : double):iProdutos;
+
+    function Gravar : Boolean;
+    function Listar(AMemTable : TFDMemTable): Boolean;
+    function Deletar : Boolean;
+    function GetProduto :
+  end;
+
+implementation
+
+end.
